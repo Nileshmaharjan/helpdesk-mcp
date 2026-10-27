@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: helpdesk
+      POSTGRES_PASSWORD: helpdesk  # local development only
+      POSTGRES_DB: helpdesk
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"  # 5434: clear of other local Postgres instances
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U helpdesk -d helpdesk"]
+      interval: 2s
+      retries: 15
+
+  helpdesk-mcp:
+    build: .
+    command: ["serve", "-transport", "http", "-addr", ":8080"]
+    environment:
+      DATABASE_URL: postgres://helpdesk:helpdesk@postgres:5432/helpdesk
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

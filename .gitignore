@@ -1,0 +1,14 @@
+# Secrets — API keys are minted per environment and never committed.
+.env
+.env.*
+!.env.example
+
+# Build output
+/helpdesk-mcp
+/bin/
+dist/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
